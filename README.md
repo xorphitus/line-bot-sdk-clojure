@@ -1,14 +1,62 @@
 # line-bot-sdk-clojure
 
-A Clojure library designed to ... well, that part is up to you.
+LINE BOT SDK for Clojure.
 
 ## Usage
 
-FIXME
+* `deflineevents`: LINE Events routing DSL
+* `validate-signature`: Validate a request wheather it is sent by LINE or not
+* `reply`: Reply text to a user
+
+### Simple example for Ring/Compojure
+
+```
+(ns clojure-line-bot.handler
+  (:require [compojure.core :refer :all]
+            [compojure.route :as route]
+            [environ.core :refer [env]]
+            [cheshire.core :refer [parse-string]]
+            [taoensso.timbre :as timbre :refer [error info]]
+            [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
+            [ring.adapter.jetty :as jetty]
+            [line-bot-sdk-clojure.core :refer :all]))
+
+(def line-channel-token (env :line-channel-token))
+(def line-channel-secret (env :line-channel-secret))
+
+(deflineevents app-lineevents
+   (MESSAGE [event]
+            (reply (get-in event [:source :userId])
+                   (:replyToken event)
+                   (get-in event [:message :text]
+                   line-channel-token)))
+   (ELSE [event]
+         (info (str "unknown event: " event))))
+
+(defroutes app-routes
+  (POST "/linebot/callback" {body :body headers :headers}
+    (let [content (slurp body)]
+      (if (validate-signature content (get headers "x-line-signature") line-channel-secret)
+        (->> (parse-string content true)
+             :events
+             app-lineevents)
+        {:status 400
+         :headers {}
+         :body "bad request"}))))
+
+(def app
+  (wrap-defaults app-routes (assoc-in api-defaults
+                                      [:params :urlencoded] false)))
+
+(defn -main [& [port]]
+  (let [port (Integer. (or port (env :port) 5000))]
+    (jetty/run-jetty app {:port port :join? false})))
+
+```
 
 ## License
 
-Copyright © 2016 FIXME
+Copyright © 2016 xorphitus
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
