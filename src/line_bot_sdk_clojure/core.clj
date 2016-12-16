@@ -1,4 +1,5 @@
 (ns line-bot-sdk-clojure.core
+  "Core library for LINE BOT w/ Messaging API"
   (:require [cheshire.core :refer [generate-string]]
             [clj-http.client :as http-client]
             [pandect.algo.sha256 :refer :all])
@@ -8,7 +9,9 @@
 (def line-api-endpoint "https://api.line.me/v2/bot")
 (def line-api-reply-path "/message/reply")
 
-(defn reply [to-user-id reply-token message line-channel-token]
+(defn reply
+  "Reply to a user by using LINE Reply Message API."
+  [to-user-id reply-token message line-channel-token]
   (let [body (generate-string {:to to-user-id
                                :replyToken reply-token
                                :messages [{:type "text"
@@ -18,7 +21,9 @@
       :headers {"Authorization" (str "Bearer " line-channel-token)}
       :content-type :json})))
 
-(defn validate-signature [content signature line-channel-secret]
+(defn validate-signature
+  "Validate a request from LINE, whether it is sent from actual LINE webhook."
+  [content signature line-channel-secret]
   (let [hash (sha256-hmac-bytes content line-channel-secret)
         decoded-signature (.. Base64 getDecoder (decode signature))]
     (. MessageDigest isEqual hash decoded-signature)))
@@ -27,13 +32,20 @@
   (let [arg (first args)]
     {name `(fn[~arg] ~handler)}))
 
-(defmacro MESSAGE [arg handler]
+(defmacro MESSAGE
+  "Generate a Message event handler dispatcher."
+  [arg handler]
   (compile-event "message" arg handler))
 
-(defmacro ELSE [arg handler]
+(defmacro ELSE
+  "Generate an event handler dispatcher which is used when no handlers are defined
+  to a event."
+  [arg handler]
   (compile-event :else arg handler))
 
-(defmacro deflineevents [name & forms]
+(defmacro deflineevents
+  "Define event dispatchings."
+  [name & forms]
   `(defn ~name [events#]
      (let [handler-map# (apply merge ~@forms)]
        (map (fn [event#]
