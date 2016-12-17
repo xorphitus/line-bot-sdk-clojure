@@ -2,6 +2,8 @@
 
 LINE BOT SDK for Clojure.
 
+[![Clojars Project](https://img.shields.io/clojars/v/line-bot-sdk-clojure.svg)](https://clojars.org/line-bot-sdk-clojure)
+
 ## Usage
 
 * `deflineevents`: LINE Events routing DSL
