@@ -27,11 +27,11 @@ LINE BOT SDK for Clojure.
 
 (deflineevents app-lineevents
    (MESSAGE [event]
-            (reply (get-in event [:source :userId])
-                   (:replyToken event)
-                   [{:type "text"
-                     :text (get-in event [:message :text]}]
-                   line-channel-token)))
+            (reply {:to (get-in event [:source :userId])
+                    :reply-token (:replyToken event)
+                    :messages [{:type "text"
+                                :text (get-in event [:message :text]}]
+                    :channel-token line-channel-token})))
    (ELSE [event]
          (info (str "unknown event: " event))))
 

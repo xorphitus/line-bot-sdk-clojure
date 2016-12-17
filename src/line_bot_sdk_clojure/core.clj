@@ -11,16 +11,19 @@
 (def ^:private message-limit 5)
 
 (defn reply
-  "Reply to a user by using LINE Reply Message API. `message-objects` is vector of maps
+  "Reply to a user by using LINE Reply Message API. `messages` is vector of maps
   specified by https://devdocs.line.me/ja/#send-message-object and its length is limited
   by LINE API specification."
-  [to-user-id reply-token message-objects line-channel-token]
-  (let [body (generate-string {:to to-user-id
+  [{:keys [to
+           reply-token
+           messages
+           channel-token]}]
+  (let [body (generate-string {:to to
                                :replyToken reply-token
-                               :messages (take message-limit message-objects)})]
+                               :messages (take message-limit messages)})]
     (http-client/post (str line-api-endpoint line-api-reply-path)
      {:body body
-      :headers {"Authorization" (str "Bearer " line-channel-token)}
+      :headers {"Authorization" (str "Bearer " channel-token)}
       :content-type :json})))
 
 (defn validate-signature
