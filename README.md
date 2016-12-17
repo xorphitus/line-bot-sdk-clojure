@@ -6,9 +6,9 @@ LINE BOT SDK for Clojure.
 
 ## Usage
 
-* `deflineevents`: LINE Events routing DSL
+* `deflineevents`: LINE Event handlers dispatcher DSL
 * `validate-signature`: Validate a request wheather it is sent by LINE or not
-* `reply`: Reply text to a user
+* `reply`: Reply messages to a user
 
 ### Simple example for Ring/Compojure
 
