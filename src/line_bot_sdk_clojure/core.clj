@@ -1,6 +1,6 @@
 (ns line-bot-sdk-clojure.core
   "Core library for LINE BOT w/ Messaging API"
-  (:require [cheshire.core :refer [generate-string]]
+  (:require [cheshire.core :refer [generate-string parse-string]]
             [clj-http.client :as http-client]
             [pandect.algo.sha256 :refer :all])
   (:import (java.util Base64)
@@ -46,8 +46,9 @@
 (defmacro deflineevents
   "Define event dispatchings."
   [name & forms]
-  `(defn ~name [events#]
-     (let [handler-map# (apply merge ~@forms)]
+  `(defn ~name [request-body#]
+     (let [handler-map# (apply merge ~@forms)
+           events# (:events (parse-string request-body# true))]
        (map (fn [event#]
               (let [ev-type# (:type event#)]
                 (if-let [handler# (get handler-map# ev-type#)]

@@ -15,7 +15,6 @@ LINE BOT SDK for Clojure.
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
             [environ.core :refer [env]]
-            [cheshire.core :refer [parse-string]]
             [taoensso.timbre :as timbre :refer [error info]]
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
             [ring.adapter.jetty :as jetty]
@@ -37,9 +36,7 @@ LINE BOT SDK for Clojure.
   (POST "/linebot/callback" {body :body headers :headers}
     (let [content (slurp body)]
       (if (validate-signature content (get headers "x-line-signature") line-channel-secret)
-        (->> (parse-string content true)
-             :events
-             app-lineevents)
+        (app-lineevents content)
         {:status 400
          :headers {}
          :body "bad request"}))))
