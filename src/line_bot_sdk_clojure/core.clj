@@ -6,9 +6,9 @@
   (:import (java.util Base64)
            (java.security MessageDigest)))
 
-(def line-api-endpoint "https://api.line.me/v2/bot")
-(def line-api-reply-path "/message/reply")
-(def message-limit 5)
+(def ^:private line-api-endpoint "https://api.line.me/v2/bot")
+(def ^:private line-api-reply-path "/message/reply")
+(def ^:private message-limit 5)
 
 (defn reply
   "Reply to a user by using LINE Reply Message API. `message-objects` is vector of maps
@@ -28,7 +28,7 @@
   [content signature line-channel-secret]
   (let [hash (sha256-hmac-bytes content line-channel-secret)
         decoded-signature (.. Base64 getDecoder (decode signature))]
-    (. MessageDigest isEqual hash decoded-signature)))
+    (MessageDigest/isEqual hash decoded-signature)))
 
 (defn- compile-event [name args handler]
   (let [arg (first args)]
