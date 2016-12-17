@@ -8,14 +8,16 @@
 
 (def line-api-endpoint "https://api.line.me/v2/bot")
 (def line-api-reply-path "/message/reply")
+(def message-limit 5)
 
 (defn reply
-  "Reply to a user by using LINE Reply Message API."
-  [to-user-id reply-token message line-channel-token]
+  "Reply to a user by using LINE Reply Message API. `message-objects` is vector of maps
+  specified by https://devdocs.line.me/ja/#send-message-object and its length is limited
+  by LINE API specification."
+  [to-user-id reply-token message-objects line-channel-token]
   (let [body (generate-string {:to to-user-id
                                :replyToken reply-token
-                               :messages [{:type "text"
-                                           :text message}]})]
+                               :messages (take message-limit message-objects)})]
     (http-client/post (str line-api-endpoint line-api-reply-path)
      {:body body
       :headers {"Authorization" (str "Bearer " line-channel-token)}

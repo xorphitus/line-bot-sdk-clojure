@@ -27,7 +27,8 @@ LINE BOT SDK for Clojure.
    (MESSAGE [event]
             (reply (get-in event [:source :userId])
                    (:replyToken event)
-                   (get-in event [:message :text]
+                   [{:type "text"
+                     :text (get-in event [:message :text]}]
                    line-channel-token)))
    (ELSE [event]
          (info (str "unknown event: " event))))
