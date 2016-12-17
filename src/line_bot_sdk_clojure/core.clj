@@ -37,6 +37,36 @@
   [arg handler]
   (compile-event "message" arg handler))
 
+(defmacro FOLLOW
+  "Generate a Follow event handler dispatcher."
+  [arg handler]
+  (compile-event "follow" arg handler))
+
+(defmacro UNFOLLOW
+  "Generate a Unfollow event handler dispatcher."
+  [arg handler]
+  (compile-event "unfollow" arg handler))
+
+(defmacro JOIN
+  "Generate a Join event handler dispatcher."
+  [arg handler]
+  (compile-event "join" arg handler))
+
+(defmacro LEAVE
+  "Generate a Leave event handler dispatcher."
+  [arg handler]
+  (compile-event "leave" arg handler))
+
+(defmacro POSTBACK
+  "Generate a Postback event handler dispatcher."
+  [arg handler]
+  (compile-event "postback" arg handler))
+
+(defmacro BEACON
+  "Generate a Beacon event handler dispatcher."
+  [arg handler]
+  (compile-event "beacon" arg handler))
+
 (defmacro ELSE
   "Generate an event handler dispatcher which is used when no handlers are defined
   to a event."
